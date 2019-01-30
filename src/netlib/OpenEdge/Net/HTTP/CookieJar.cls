@@ -73,7 +73,10 @@ class OpenEdge.Net.HTTP.CookieJar use-widget-pool
     end constructor.
 
     constructor public CookieJar():
-        assign this-object:Logger = LoggerBuilder:GetLogger(get-class(CookieJar)).
+        assign 
+            this-object:Logger        = LoggerBuilder:GetLogger(get-class(CookieJar))
+            this-object:CookieJarPath = session:temp-dir + 'cookies.json':u
+            .
     end constructor.
 
     destructor CookieJar():
@@ -82,7 +85,6 @@ class OpenEdge.Net.HTTP.CookieJar use-widget-pool
     
     /* Initializer/Startup */
     method public void Initialize():
-        assign this-object:CookieJarPath = session:temp-dir + 'cookies.json':u.
         CookieJar:LoadCookieJar(this-object:CookieJarPath).
     end method.
     
@@ -193,9 +195,22 @@ class OpenEdge.Net.HTTP.CookieJar use-widget-pool
                         -1: cookie matches URI and has expired */        
     method private integer CheckCookie (input poURI as URI,
                                         input poCookie as Cookie):
-        if poCookie:ExpiresAt lt now then
+        
+        /* ExpiresAt can be ? */
+        if (poCookie:ExpiresAt ne ? and  /* ? == session cookie */
+            poCookie:ExpiresAt lt now  ) /* expired             */
+        then
             return -1.
-                            
+                       
+        /* even though this is used in one place (getcookies), and cookies
+         * passed in are chosen by Host/URI, add one more enforcement check
+         */
+        if not (poURI:Host matches subst('*~.&1',poCookie:Domain) or
+                poURI:Host eq poCookie:Domain) and
+           not poURI:Path begins poCookie:Path
+        then
+           return 0.
+         
         if poCookie:HttpOnly and 
            not poUri:Scheme eq string(UriSchemeEnum:http)  and
            not poUri:Scheme eq string(UriSchemeEnum:https) then
@@ -203,8 +218,9 @@ class OpenEdge.Net.HTTP.CookieJar use-widget-pool
         
         if poCookie:Secure and
            not poUri:Scheme eq string(UriSchemeEnum:https) then
-            return 0.           
-        
+            return 0.  
+                     
+          
         return 1.
     end method.
 
@@ -244,6 +260,8 @@ class OpenEdge.Net.HTTP.CookieJar use-widget-pool
         define variable iMax as integer no-undo.
         define variable iLoop as integer no-undo.
         
+        define variable CookieObj as Cookie no-undo.
+        
         define buffer lbCookie for PersistentCookie.
         
         assign file-info:file-name = pcCookieJarPath.
@@ -257,15 +275,27 @@ class OpenEdge.Net.HTTP.CookieJar use-widget-pool
             assign oArray = oLoad:GetJsonArray('cookies':u)
                    iMax = oArray:Length.
         do iLoop = 1 to iMax:
-            assign oCookie = oArray:GetJsonObject(iLoop).
-            create lbCookie.
-            assign lbCookie.CookieName = oCookie:GetCharacter('CookieName':u)
-                   lbCookie.Domain = oCookie:GetCharacter('Domain':u)
-                   lbCookie.Path = oCookie:GetCharacter('Path':u)
-                   lbCookie.CreatedAt = oCookie:GetDatetimeTZ('CreatedAt':u) 
-                   lbCookie.LastAccessedAt  = oCookie:GetDatetimeTZ('LastAccessedAt':u)
-                   lbCookie.WholeCookie = OpenEdge.Net.HTTP.Cookie:Parse(oCookie:GetCharacter('Cookie':u)).                   
+            assign oCookie   = oArray:GetJsonObject(iLoop)
+                   CookieObj = OpenEdge.Net.HTTP.Cookie:Parse(oCookie:GetCharacter('Cookie':u))
+                   .
+            
+            /* no sense loading expired cookies */
+            if CookieObj:ExpiresAt ne ? and
+               CookieObj:ExpiresAt le now then
+            do:
+                create lbCookie.
+                assign lbCookie.CookieName = oCookie:GetCharacter('CookieName':u)
+                       lbCookie.Domain = oCookie:GetCharacter('Domain':u)
+                       lbCookie.Path = oCookie:GetCharacter('Path':u)
+                       lbCookie.CreatedAt = oCookie:GetDatetimeTZ('CreatedAt':u) 
+                       lbCookie.LastAccessedAt  = oCookie:GetDatetimeTZ('LastAccessedAt':u)
+                       lbCookie.WholeCookie = CookieObj.
+            end.                                          
         end.
+        
+        finally:
+            assign CookieObj = ?.
+        end finally.
     end method.
     
     /** Persists - to disk - the current set of persistent cookies */
@@ -382,11 +412,21 @@ class OpenEdge.Net.HTTP.CookieJar use-widget-pool
             return.
         end.
         
-        /* we only store a cookie in one place (either session or persistent) */
-        if poCookie:ExpiresAt eq ? then
-            PutCookie(buffer SessionCookie:handle, pcDomain, pcPath, poCookie).
+        /* cookies with an expiry in the past must be deleted immediately */
+        if (poCookie:ExpiresAt ne ?)   and  /* has a date */
+           (poCookie:ExpiresAt lt now) then /* in the past */
+        do:
+           this-object:DeleteCookie(buffer SessionCookie:handle, poCookie).
+           this-object:DeleteCookie(buffer PersistentCookie:handle, poCookie).
+        end.
         else
-            PutCookie(buffer PersistentCookie:handle, pcDomain, pcPath, poCookie).
+        do:        
+            /* we only store a cookie in one place (either session or persistent) */
+            if poCookie:ExpiresAt eq ? then
+                PutCookie(buffer SessionCookie:handle, pcDomain, pcPath, poCookie).
+            else
+                PutCookie(buffer PersistentCookie:handle, pcDomain, pcPath, poCookie).
+        end.
     end method.
     
     /** Adds a single cookie to the jar (and persists, if needed).
