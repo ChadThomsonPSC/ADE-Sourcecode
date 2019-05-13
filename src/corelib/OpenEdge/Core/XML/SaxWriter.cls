@@ -31,7 +31,7 @@ class OpenEdge.Core.XML.SaxWriter use-widget-pool:
     define public property WriteStatus as SaxWriteStatusEnum no-undo
         get():
             if valid-handle(mhSaxWriter) then
-                return SaxWriteStatusEnum:GetEnum(/* STRING() because of PSC00330756 */ string(mhSaxWriter:write-status)).
+                return SaxWriteStatusEnum:GetEnum(mhSaxWriter:write-status).
         end get.
     
     /** Maps to SAX-WRITER ENCODING attribute. See the ABL documentation for more details. */

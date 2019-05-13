@@ -19,27 +19,28 @@ block-level on error undo, throw.
 enum OpenEdge.Core.XML.SaxWriteStatusEnum: 
     define enum
             /* No writing has occurred. */
-            Sax-Write-Idle
+            Sax-Write-Idle  = 1
             Idle = Sax-Write-Idle
             
             /* The START-DOCUMENT method has been called and writing has begun. */
-            Sax-Write-Begin
+            Sax-Write-Begin = 2
             Begin = Sax-Write-Begin
              
             /* The writer has written an opening tag. This is the only time that attributes can 
                 be inserted with INSERT-ATTRIBUTE and DECLARE-NAMESPACE. */
-            Sax-Write-Tag
+            Sax-Write-Tag = 3
             Tag = Sax-Write-Tag
+            
             /* The writer is within an element. */
-            Sax-Write-Element
+            Sax-Write-Element = 4
             Element = Sax-Write-Element
             
             /* The writer has written the content of an element. In other words, the WRITE-CHARACTERS method has been called. */
-            Sax-Write-Content
+            Sax-Write-Content = 5
             Content  = Sax-Write-Content
             
             /* The END-DOCUMENT method has been called and writing is complete.  */
-            Sax-Write-Complete
+            Sax-Write-Complete = 6
             Complete = Sax-Write-Complete
             
             /* The SAX-writer could not start or could not continue. Likely causes include: SAX-writer 
@@ -47,7 +48,7 @@ enum OpenEdge.Core.XML.SaxWriteStatusEnum:
                This is the status if there is an invalid XML generated while STRICT is TRUE.
                If the status is SAX-WRITE-ERROR then no attributes can be written and the only
                method that can be called is RESET. */
-            Sax-Write-Error
+            Sax-Write-Error = 7 
             Error = Sax-Write-Error
             
             Default = Idle.
