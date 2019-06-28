@@ -96,8 +96,8 @@ FUNCTION checkFile RETURNS LOGICAL
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
-
-{src/web2/wrap-cgi.i}
+/* CRT: no need to use web2 */
+{src/web/method/wrap-cgi.i}
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
