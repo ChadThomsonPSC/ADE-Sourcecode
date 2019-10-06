@@ -190,14 +190,12 @@ class OpenEdge.Net.HTTP.Lib.ABLSockets.ABLSocketLibrary
                 
                 copy-lob from poEventArgs:Data:Value starting at 1 for writeBytes
                          to file cChunkFile
-                         append
-                         no-convert.
+                         append.
             end.
             
             copy-lob from poEventArgs:Data:Value starting at 1 for writeBytes
                      to file session:temp-dir + 'response-data-received.txt':u
-                     append
-                     no-convert.
+                     append.
         end.
         
         /* Process the number of bytes read chunk */
@@ -455,7 +453,6 @@ class OpenEdge.Net.HTTP.Lib.ABLSockets.ABLSocketLibrary
     method private void ExtractBody(input poRequest as IHttpRequest,
                                     input poMessageBody as ByteBucket):
         define variable oBodyWriter as MessageWriter no-undo.
-        
         
         assign oBodyWriter = RequestWriterBuilder:Build(poRequest)
                                     :WriteTo(poMessageBody)

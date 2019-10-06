@@ -1,5 +1,5 @@
 /* *************************************************************************************************************************
-Copyright (c) 2018-2019 by Progress Software Corporation and/or one of its subsidiaries or affiliates. All rights reserved.
+Copyright (c) 2018 by Progress Software Corporation and/or one of its subsidiaries or affiliates. All rights reserved.
 ************************************************************************************************************************** */
 /*------------------------------------------------------------------------
     File        : QueryPredicate
@@ -20,8 +20,7 @@ using Ccs.Common.Support.IPrimitiveHolder.
 using OpenEdge.Core.Assert.
 using OpenEdge.Core.AssertionFailedError.
 
-class OpenEdge.BusinessLogic.QueryPredicate implements IQueryPredicate:
-
+class OpenEdge.BusinessLogic.QueryPredicate implements IQueryPredicate: 
     /* Returns the name of the field for this query predicate */
     define public property FieldName as character no-undo 
         get.
@@ -93,12 +92,12 @@ class OpenEdge.BusinessLogic.QueryPredicate implements IQueryPredicate:
     end constructor.
     
     method override public character ToString():
-        return trim(substitute('&1 &2 &3 &4',
-                               this-object:FieldName,
-                               this-object:Operator:ToString(),
-                               (if valid-object(this-object:Value) then this-object:Value:ToString() else if valid-object(this-object:Values) then this-object:Values:ToString() else ?),
-                               (if valid-object(this-object:Join) then this-object:Join:ToString() else '':u))).
+        return substitute('&1 &2 &3 &4',
+                    this-object:FieldName,
+                    this-object:Operator:ToString(),
+                    (if valid-object(this-object:Value) then this-object:Value:ToString() else if valid-object(this-object:Values) then this-object:Values:ToString() else ?),
+                    (if valid-object(this-object:Join) then this-object:Join:ToString() else '':u) ).
     end method.
- 
+    
 end class
 .

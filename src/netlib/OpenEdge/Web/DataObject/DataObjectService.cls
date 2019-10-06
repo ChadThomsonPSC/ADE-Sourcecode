@@ -1,5 +1,5 @@
 /* *************************************************************************************************************************
-Copyright (c) 2017-2019 by Progress Software Corporation and/or one of its subsidiaries or affiliates. All rights reserved.
+Copyright (c) 2017-2018 by Progress Software Corporation and/or one of its subsidiaries or affiliates. All rights reserved.
 ************************************************************************************************************************** */
 /*------------------------------------------------------------------------
     File        : DataObjectService
@@ -15,6 +15,7 @@ using Ccs.Common.Support.IHandleHolder.
 using OpenEdge.Core.Assert.
 using OpenEdge.Core.Collections.IIterator.
 using OpenEdge.Core.DataTypeEnum.
+using OpenEdge.Core.DataTypeHelper.
 using OpenEdge.Core.SemanticVersion.
 using OpenEdge.Core.Util.BuilderRegistry.
 using OpenEdge.Core.WidgetHandle.
@@ -312,10 +313,6 @@ class OpenEdge.Web.DataObject.DataObjectService:
         define variable schemaExists as logical no-undo.
         define variable schemaClone as IHandleHolder no-undo.
         define variable oper as MappedOperation no-undo.
-        define variable loop as integer no-undo.
-        define variable cnt as integer no-undo.
-        define variable tbl as handle no-undo.
-        
         define buffer lbSchema for DataSchema.
         define buffer lbOper for Operation.
         
@@ -323,9 +320,9 @@ class OpenEdge.Web.DataObject.DataObjectService:
         Assert:NotNull(pSchema, 'Schema ').
         
         case pSchema:type:
-            when string(DataTypeEnum:Temp-Table) or
-            when string(DataTypeEnum:Buffer) or
-            when string(DataTypeEnum:Dataset) then
+            when DataTypeHelper:GetMask(DataTypeEnum:TempTable) or
+            when DataTypeHelper:GetMask(DataTypeEnum:Buffer) or
+            when DataTypeHelper:GetMask(DataTypeEnum:Dataset) then
                 .   // NO-OP
             otherwise
                 return error new AppError(substitute('Unsupported schema type: &1', pSchema:type), 0).
@@ -345,21 +342,6 @@ class OpenEdge.Web.DataObject.DataObjectService:
         assign lbSchema.DataStructure = pSchema
                // reset the error-status error flag from above
                no-error.
-        
-        case pSchema:type:
-            when string(DataTypeEnum:Dataset) then
-            do:
-                assign cnt = pSchema:num-buffers.
-                do loop = 1 to cnt:
-                    assign tbl = pSchema:get-buffer-handle(loop). 
-                    // It's posible to have a TT and a PDS with the same name; wwe'll keep the dataset
-                    if tbl:name eq pSchema:name then
-                        next.
-                    
-                    PutSchema(tbl:name, tbl:table-handle).
-                end.
-            end.
-        end case.
         
         // do we need to clone this schema for any operation?
         for each lbOper where lbOper.ParentSvc eq int64(this-object):
@@ -534,9 +516,9 @@ class OpenEdge.Web.DataObject.DataObjectService:
             return schemaClone.
         
         case hSchema:type:
-            when string(DataTypeEnum:Dataset) then 
+            when 'dataset':u then
                 create dataset hClone.
-            when string(DataTypeEnum:Temp-Table) then
+            when 'temp-table':u then
             do:
                 // If the TT is part of a dataset, clone the DATASET - we'll only use the
                 // temp-table but we want it to be part of a whole
@@ -549,7 +531,7 @@ class OpenEdge.Web.DataObject.DataObjectService:
         
         hClone:create-like(hSchema).
         case hClone:type:
-            when string(DataTypeEnum:Temp-Table) then
+            when 'temp-table':u then
             do:
                 // The BEFORE-TABLE does NOT come along for the ride by default ...
                 hClone:temp-table-prepare(hSchema:name, valid-handle(hSchema:before-table) ).
@@ -600,9 +582,9 @@ class OpenEdge.Web.DataObject.DataObjectService:
         do loop =  1 to numChildren:
             assign childOption = pOptions:GetChildSchema(childSchemaNames[loop]).
             case pSchema:type:
-                when string(DataTypeEnum:Dataset) then
+                when 'dataset':u then
                     assign schemaElement = pSchema:get-buffer-handle(childSchemaNames[loop]).
-                when string(DataTypeEnum:Temp-Table) then
+                when 'temp-table':u then
                     assign schemaElement = pSchema:buffer-field(childSchemaNames[loop]).
                 otherwise
                     assign schemaElement = pSchema.

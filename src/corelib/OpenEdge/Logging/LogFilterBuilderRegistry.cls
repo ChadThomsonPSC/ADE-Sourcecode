@@ -12,11 +12,11 @@ Copyright (c) 2016, 2018 by Progress Software Corporation and/or one of its subs
 block-level on error undo, throw.
 
 using OpenEdge.Core.Util.BuilderRegistry.
+using OpenEdge.Logging.AnonymizedTokenFormatBuilder.
 using OpenEdge.Logging.Filter.LogFilterBuilder.
 using OpenEdge.Logging.LogFilterBuilderRegistry.
 using OpenEdge.Logging.LoggerFilterRegistry.
 using OpenEdge.Logging.Writer.FileLogWriterBuilder.
-using OpenEdge.Logging.AnonymizedTokenFormatBuilder.
 
 class OpenEdge.Logging.LogFilterBuilderRegistry:
     

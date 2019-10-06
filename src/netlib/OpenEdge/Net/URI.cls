@@ -784,8 +784,7 @@ class OpenEdge.Net.URI serializable:
     
     /** Adds a query argument
         @param character The query name 
-        @param character The query value 
-   */
+        @param character The query value */
     method public void AddQuery (input pcName as character,
                                  input pcValue as character):
         define variable lcValue as longchar no-undo.
@@ -793,11 +792,9 @@ class OpenEdge.Net.URI serializable:
         Assert:NotNullOrEmpty(pcName, 'Query name').
         
         /* flag URI as changed */
-        assign mcUri   = ?.
-        if pcValue eq ? then
-           assign lcValue = ?.
-        else
-           assign lcValue = EncodeQuery(pcValue).
+        assign mcUri   = ?
+               lcValue = EncodeQuery(pcValue)
+               .
         this-object:QueryMap:Put(pcName, lcValue).
     end method.
     

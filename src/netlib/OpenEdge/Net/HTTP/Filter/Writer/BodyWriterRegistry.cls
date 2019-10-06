@@ -1,5 +1,5 @@
 /************************************************
-Copyright (c) 2015, 2018-2019 by Progress Software Corporation. All rights reserved.
+Copyright (c) 2015, 2018 by Progress Software Corporation. All rights reserved.
 *************************************************/ 
 /*------------------------------------------------------------------------
     File        : BodyWriterRegistry
@@ -9,7 +9,7 @@ Copyright (c) 2015, 2018-2019 by Progress Software Corporation. All rights reser
     Description : 
     Author(s)   : pjudge
     Created     : Wed Jul 01 14:54:10 EDT 2015
-    Notes       : ** OCTA-11217 -- update to support variable assignment for put get-class condition
+    Notes       : 
   ----------------------------------------------------------------------*/
 block-level on error undo, throw.
 
@@ -44,14 +44,9 @@ class OpenEdge.Net.HTTP.Filter.Writer.BodyWriterRegistry:
     
         @param BuilderRegistry The registry to populate */
     method static private void InitializeRegistry(input poRegistry as BuilderRegistry):
-        
-        DEFINE VARIABLE opType AS CLASS Progress.Lang.Class.
-        
-        ASSIGN
-          opType = get-class(JsonBodyWriter).
         /* JSON */
-        poRegistry:Put('application/json':u,              opType).
-        poRegistry:Put('application/vnd.progress+json':u, opType).
+        poRegistry:Put('application/json':u,              get-class(JsonBodyWriter)).
+        poRegistry:Put('application/vnd.progress+json':u, get-class(JsonBodyWriter)).
         
         /* TEXT, INCL HTML */
         poRegistry:Put('text/html':u, get-class(HtmlBodyWriter)).
@@ -60,27 +55,23 @@ class OpenEdge.Net.HTTP.Filter.Writer.BodyWriterRegistry:
         /* FORM DATA */
         poRegistry:Put('application/x-www-form-urlencoded':u, get-class(FormDataBodyWriter)).
         
-        ASSIGN
-          opType = get-class(XmlBodyWriter).
         /* XML */
-        poRegistry:Put('text/xml':u,                               opType).
-        poRegistry:Put('text/xml-external-parsed-entity':u,        opType).
-        poRegistry:Put('application/xml':u,                        opType).
-        poRegistry:Put('application/xml-external-parsed-entity':u, opType).
-        poRegistry:Put('application/xml-dtd':u,                    opType).
+        poRegistry:Put('text/xml':u,                               get-class(XmlBodyWriter)).
+        poRegistry:Put('text/xml-external-parsed-entity':u,        get-class(XmlBodyWriter)).
+        poRegistry:Put('application/xml':u,                        get-class(XmlBodyWriter)).
+        poRegistry:Put('application/xml-external-parsed-entity':u, get-class(XmlBodyWriter)).
+        poRegistry:Put('application/xml-dtd':u,                    get-class(XmlBodyWriter)).
 
-        ASSIGN
-          opType = GET-CLASS(BinaryBodyWriter).
         /* BINARY */
-        poRegistry:Put('application/octet-stream':u, opType).
-        poRegistry:Put('application/pdf':u,          opType).
-        poRegistry:Put('application/zip':u,          opType).
-        poRegistry:Put('application/gzip':u,         opType).
+        poRegistry:Put('application/octet-stream':u, get-class(BinaryBodyWriter)).
+        poRegistry:Put('application/pdf':u,          get-class(BinaryBodyWriter)).
+        poRegistry:Put('application/zip':u,          get-class(BinaryBodyWriter)).
+        poRegistry:Put('application/gzip':u,         get-class(BinaryBodyWriter)).
         
         /* General */
-        poRegistry:Put('audio/*':u,                  opType).
-        poRegistry:Put('image/*':u,                  opType).
-        poRegistry:Put('video/*':u,                  opType).
+        poRegistry:Put('audio/*':u, get-class(BinaryBodyWriter)).
+        poRegistry:Put('image/*':u, get-class(BinaryBodyWriter)).
+        poRegistry:Put('video/*':u, get-class(BinaryBodyWriter)).
         
         /* Multipart */
         poRegistry:Put('multipart/form-data':u, get-class(MultipartFormBodyWriter)).

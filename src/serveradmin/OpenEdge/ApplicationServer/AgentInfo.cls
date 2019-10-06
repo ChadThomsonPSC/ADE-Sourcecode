@@ -30,8 +30,8 @@ class OpenEdge.ApplicationServer.AgentInfo :
     /* clear the agent request table */
 
     Progress.ApplicationServer.AgentInfo:getAgentRequestTableHandle(output statsData).
-    if valid-handle(statsData) then
-        statsData:empty-temp-table().
+        if valid-handle(statsData) then
+            statsData:empty-temp-table().
 
     end method.
     
