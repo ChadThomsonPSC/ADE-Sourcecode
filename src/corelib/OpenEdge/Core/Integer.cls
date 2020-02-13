@@ -29,5 +29,16 @@ class OpenEdge.Core.Integer implements IInt64Holder:
     method override public character ToString():
         return string(this-object:Value).
     end method.
+
+    method override public logical Equals( input objectRef as Progress.Lang.Object ):
+        if type-of(objectRef,OpenEdge.Core.Integer) then
+            return (cast(objectRef,OpenEdge.Core.Integer):Value eq this-object:Value).
+        else
+            return super:Equals(input objectRef).
+    end method.
+
+    method override public Progress.Lang.Object Clone(  ):
+        return new OpenEdge.Core.Integer(this-object:Value).
+    end method.
     
 end class.
