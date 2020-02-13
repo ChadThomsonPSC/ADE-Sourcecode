@@ -49,7 +49,7 @@ class OpenEdge.BusinessLogic.QueryOperatorHelper:
                 return QueryOperatorEnum:Le.
             
             when '<>':u or
-            when 'neq':u then
+            when 'new':u then
                 return QueryOperatorEnum:Ne.
             
             when 'startswith':u then

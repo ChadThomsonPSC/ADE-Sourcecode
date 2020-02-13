@@ -377,12 +377,6 @@ class OpenEdge.Logging.ConfigFileLoggerBuilder inherits LoggerBuilder:
             assign logWriter = super:GetLoggerInstance().
         
         return logWriter.
-        catch err as Progress.Lang.Error:
-            LoggerBuilder:LogMessage(substitute('Error building logger &1: &2', lbLogger.LoggerName, err:GetMessage(1)),
-                                     LogLevelEnum:ERROR).
-            
-            return new VoidLogger(lbLogger.LoggerName).
-        end catch.        
     end method.
     
     /* Finds the log level for a logger to use, based on the logger type
@@ -518,9 +512,6 @@ class OpenEdge.Logging.ConfigFileLoggerBuilder inherits LoggerBuilder:
                                       buffer pbLogger for Logger):
         define variable dotPos as integer no-undo.
         
-        // so we don't end up with a previously-found buffer
-        release pbLogger.
-        
         if can-find(pbLogger where pbLogger.LoggerName eq pcLoggerType) then
             find pbLogger where pbLogger.LoggerName eq pcLoggerType.
         if available pbLogger then
@@ -557,8 +548,9 @@ class OpenEdge.Logging.ConfigFileLoggerBuilder inherits LoggerBuilder:
         Assert:NotNullOrEmpty(pcFilterType, 'Filter type').
         
         assign rcode-info:file-name = replace(pcFilterType, '.':u, '/':u).
-        if rcode-info:md5-value ne pcFilterHash then
-            return error new AppError(substitute('Filter error: invalid Filter &1', pcFilterType), 0).
+        // in 12.0.0+ the md5-value attribute _always_ returns ?
+        if not rcode-info:signature-value eq pcFilterHash then
+            return error new AppError(substitute('Filter error: invalid signature for "&1"', pcFilterType), 0).
     end method.
     
 end class.

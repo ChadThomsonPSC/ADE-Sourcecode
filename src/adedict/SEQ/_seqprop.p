@@ -16,8 +16,8 @@ Author: Laura Stern
 
 Date Created: 02/21/92 
     Modified: 07/14/98 D. McMann Added _Owner to _file finds.
-              05/25/06 fernando  Support for 64-bit sequences    
-              11/15/18 rkumar    ADAS-11162 - fix issue with display of sequence properties 
+              05/25/06 fernando  Support for 64-bit sequences   
+              11/15/18 rkumar    ADAS-11162 - fix issue with display of sequence properties			  
 ----------------------------------------------------------------------------*/
 
 
@@ -156,7 +156,7 @@ if NOT s_Seq_ReadOnly then
    end.
 
 /*IF b_Sequence._Seq-misc[6] = ? THEN b_Sequence._Seq-misc[6] = "n/a" .
-IF b_Sequence._Seq-misc[7] = ? THEN b_Sequence._Seq-misc[7] = "n/a" .*/
+IF b_Sequence._Seq-misc[7] = ? THEN b_Sequence._Seq-misc[7] = "n/a" . */
 
 display b_Sequence._Seq-Name  
         b_Sequence._Seq-Attributes[1]

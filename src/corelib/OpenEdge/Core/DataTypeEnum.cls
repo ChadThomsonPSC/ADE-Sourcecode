@@ -1,5 +1,5 @@
 /************************************************
-Copyright (c)  2013, 2015-2016, 2018-2019 by Progress Software Corporation. All rights reserved.
+Copyright (c)  2013, 2015-2016 by Progress Software Corporation. All rights reserved.
 *************************************************/
 /** ------------------------------------------------------------------------
     File        : DataTypeEnum
@@ -14,7 +14,7 @@ Copyright (c)  2013, 2015-2016, 2018-2019 by Progress Software Corporation. All 
 block-level on error undo, throw.
   
 enum OpenEdge.Core.DataTypeEnum:
-    define enum       None
+    define enum       None               
                       
                       /* ABL Primitives */
                       Character          
@@ -37,8 +37,7 @@ enum OpenEdge.Core.DataTypeEnum:
                       DateArray          
                       Datetime           
                       DatetimeArray      
-                      Datetime-TZ
-                      DatetimeTZ         = Datetime-TZ
+                      DatetimeTZ         
                       DatetimeTZArray    
                       Raw                
                       RawArray           
@@ -48,37 +47,31 @@ enum OpenEdge.Core.DataTypeEnum:
                       HandleArray        
                       BLOB               
                       CLOB               
-                      Com-Handle
-                      ComHandle          = Com-Handle
+                      ComHandle          
                       ComHandleArray     
-                      
+                    
                       /* Data structures */
                       Dataset            
                       Buffer             
-                      Temp-Table
-                      TempTable          = Temp-Table   
-                      Client-Principal
-                      ClientPrincipal    = Client-Principal       
-                      
+                      TempTable   
+                      ClientPrincipal       
+                    
                       /* User-defined types */
                       ProgressLangObject 
-                      Enumeration
-                      Enum               = Enumeration
-                      Class
-                      ClassArray
-                      
+                      Enumeration        
+                      Class              
+                      ClassArray         
+                
                       /* Streams */
-                      Stream
-                      
+                      Stream 
+                    
                       /* Query Where clause 'types' */
-                      Row-State
-                      RowState          = Row-State
-                      
+                      RowState 
+                    
                       /* XML */
-                      X-Document
-                      XmlDocument       = X-Document
-                      X-Noderef
-                      XmlNodeRef        = X-Noderef
+                      XmlDocument 
+                      XmlNodeRef
+                      
                       
                       Default = Character.  
 end enum.

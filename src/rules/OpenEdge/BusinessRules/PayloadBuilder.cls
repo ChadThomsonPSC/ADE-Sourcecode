@@ -1,5 +1,5 @@
 /************************************************
-Copyright (c) 2013, 2018-2019 by Progress Software Corporation. All rights reserved.
+Copyright (c) 2013, 2018 by Progress Software Corporation. All rights reserved.
 *************************************************/
 /*------------------------------------------------------------------------
     File        : PayloadBuilder
@@ -53,9 +53,9 @@ class OpenEdge.BusinessRules.PayloadBuilder use-widget-pool:
         mhSaxWriter:encoding = 'utf-8'.
         mhSaxWriter:start-document().
           mhSaxWriter:start-element('CorticonRequest').
-             mhSaxWriter:declare-namespace('urn:Corticon').
-             mhSaxWriter:declare-namespace('http://www.w3.org/2001/XMLSchema-instance', 'xsi').
-             mhSaxWriter:insert-attribute('decisionServiceName', pcDecisionServiceName).
+            mhSaxWriter:declare-namespace('urn:Corticon').
+            mhSaxWriter:declare-namespace('http://www.w3.org/2001/XMLSchema-instance', 'xsi').
+            mhSaxWriter:insert-attribute('decisionServiceName', pcDecisionServiceName).
             
         /* Only one selector is used (or none) */
         case poDecisionServiceSelector:
@@ -69,9 +69,6 @@ class OpenEdge.BusinessRules.PayloadBuilder use-widget-pool:
         
         mhSaxWriter:start-element('ns1:WorkDocuments').
           mhSaxWriter:declare-namespace('urn:Corticon', 'ns1').
-          mhSaxWriter:declare-namespace('http://www.w3.org/2001/XMLSchema-instance', 'xsi').
-          // because of the changed SOAP stack in Corticon 5.7 we need to muck about with the namespace for nils 
-          mhSaxWriter:declare-namespace('http://www.w3.org/2001/XMLSchema-instance', 'abl').
         
         if valid-handle(phAppData) then
         do:
@@ -135,7 +132,7 @@ class OpenEdge.BusinessRules.PayloadBuilder use-widget-pool:
                 mhSaxWriter:start-element(hField:xml-node-name).
                           
                 if hField:buffer-value eq ? then
-                    mhSaxWriter:insert-attribute('abl:nil':u, 'true':u).
+                    mhSaxWriter:insert-attribute('xsi:nil', 'true').
                 else
                 do:
                     case hField:data-type:
@@ -151,7 +148,7 @@ class OpenEdge.BusinessRules.PayloadBuilder use-widget-pool:
                             if get-size(mBlobData) gt 0 then
                                 mhSaxWriter:write-characters(base64-encode(mBlobData)).
                             else
-                                mhSaxWriter:insert-attribute('abl:nil':u, 'true':u).
+                                mhSaxWriter:insert-attribute('xsi:nil', 'true').
                             finally:
                                 set-size(mBlobData) = 0.
                             end finally.
@@ -180,7 +177,7 @@ class OpenEdge.BusinessRules.PayloadBuilder use-widget-pool:
                                         session:numeric-decimal-point,
                                         '.')).
                         otherwise
-                            mhSaxWriter:write-characters(string(hField:buffer-value)).
+                            mhSaxWriter:write-characters(string(hField:buffer-value)).                        
                     end case.
                 end.    /* non-nil value */
                 mhSaxWriter:end-element(hField:xml-node-name).

@@ -1,5 +1,5 @@
 /* *************************************************************************************************************************
-Copyright (c) 2018-2019 by Progress Software Corporation and/or one of its subsidiaries or affiliates. All rights reserved.
+Copyright (c) 2018 by Progress Software Corporation and/or one of its subsidiaries or affiliates. All rights reserved.
 ************************************************************************************************************************** */
 /*------------------------------------------------------------------------
     File        : QueryDefinition
@@ -17,8 +17,7 @@ using Ccs.BusinessLogic.IQueryEntry.
 using Ccs.BusinessLogic.IQuerySortEntry.
 using OpenEdge.Core.Assert.
 
-class OpenEdge.BusinessLogic.QueryDefinition implements IQueryDefinition:
-
+class OpenEdge.BusinessLogic.QueryDefinition implements IQueryDefinition: 
     /* Returns the list of query predicates or query groups for this query definition */
     define public property QuerySelection as IQueryEntry no-undo get. set. 
     
@@ -57,9 +56,11 @@ class OpenEdge.BusinessLogic.QueryDefinition implements IQueryDefinition:
         define variable cnt as integer no-undo.
         define variable loop as integer no-undo.
         
-        assign cnt = extent(this-object:QuerySort).
+        assign cnt     = extent(this-object:QuerySort)
+               qrySort = '[':u
+               .
         do loop = 1 to cnt:
-            assign qrySort = qrySort + '[':u.
+            assign qrySort = qrySort + '],[':u.
             if valid-object(this-object:QuerySort[loop]) then
                 assign qrySort = qrySort + this-object:QuerySort[loop]:ToString().
             else
@@ -67,7 +68,7 @@ class OpenEdge.BusinessLogic.QueryDefinition implements IQueryDefinition:
         end.
         assign qrySort = qrySort + ']':u.
         
-        return substitute('selection: &1; sort: &2',
+        return substitute('selection:&1; sort:&2',
                 (if valid-object(this-object:QuerySelection) then this-object:QuerySelection:ToString() else ?),
                 qrySort ).
     end method.

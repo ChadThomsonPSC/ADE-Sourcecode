@@ -87,12 +87,6 @@ class OpenEdge.Web.DataObject.MappedOperation:
         get.
         private set.
     
-    /* (optional) Access control list for this operation. Typically one or more ROLES that will be evaluated 
-       against the current user. */
-    define public property AccessControl as character extent no-undo
-        get.
-        set.
-    
     /* Constructor
        
        @param character The service URI
@@ -149,7 +143,7 @@ class OpenEdge.Web.DataObject.MappedOperation:
                                        input poParams as IList):
         Assert:NotNull(pcServiceURI, 'Service URI').
         Assert:NotNull(poMethod, 'Operation method').
-        Assert:NotNullOrEmpty(pcContentType, 'Content type').
+        Assert:NotNull(pcContentType, 'Content type').
         Assert:NotNullOrEmpty(pTargetType, 'Target type').
         Assert:NotNull(pcTargetName, 'Target name').
         Assert:NotNull(poParams, 'Operation parameters').
@@ -162,18 +156,13 @@ class OpenEdge.Web.DataObject.MappedOperation:
                                     0).
         
         // VOID targets are allowed empty names (by definition, really)
-        if not pTargetType eq string(TargetTypeEnum:Void) then
+        if not pTargetType eq string(TargetTypeEnum:void) then
         do:
             Assert:NotEmpty(pcTargetName, 'Target name').
             Assert:NotEmpty(pcContentType, 'Content type').
         end.
-        else
-        // Procedures may have a NULL target (ie call the main block)
-        if pTargetType eq string(TargetTypeEnum:Procedure) then
-            Assert:NotEmpty(pcTargetFunction, 'Target function').
-        else
-            Assert:NotNullOrEmpty(pcTargetFunction, 'Target function').
         
+        Assert:NotNull(pcTargetFunction, 'Target function').
         Assert:NotNull(poParams, 'Operation parameters').
         Assert:IsPositive(piStatusCode, 'Status code').
         

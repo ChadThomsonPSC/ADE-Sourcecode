@@ -2,7 +2,7 @@
 Copyright (c) 2016, 2018 by Progress Software Corporation and/or one of its subsidiaries or affiliates. All rights reserved.
 ************************************************************************************************************************** */
 /*------------------------------------------------------------------------
-    File        : HandlerErrorEventArgs
+    File        : OperationErrorEventArgs
     Purpose     : Arguments for the data object handler's invocation
     Syntax      : 
     Description : 
@@ -20,32 +20,28 @@ using OpenEdge.Web.DataObject.MappedOperation.
 using OpenEdge.Web.IWebRequest.
 
 class OpenEdge.Web.DataObject.HandlerErrorEventArgs inherits DataObjectEventArgs:
-    /* (required) The Error that caused the OperationError event to fire */
-    define public property OperationError as class Progress.Lang.Error no-undo
-        get.
-        private set.
-    
     /* Constructor.
        
+       @param Progress.Lang.Error The as-yet-unhandled exception
        @param IWebRequest The request that resulting in the exception
-       @param Progress.Lang.Error The operation error that caused the event */
+       @param IHttpResponse The current response object, if any
+       @param Progress.Lang.Object The 'business entity' object, if any */
     constructor public HandlerErrorEventArgs(input poRequest  as IWebRequest,
-                                             input poError as Progress.Lang.Error):
+                                             input poError as Progress.Lang.Error):    
         super(poRequest).
         
         Assert:NotNull(poError, 'Error').
-        assign this-object:OperationError = poError.
+        assign this-object:Error = poError.
     end constructor.
 
     /* Constructor.
        
        @param IWebRequest The request that resulting in the exception
        @param IHttpResponse The current response object, if any
-       @param Progress.Lang.Error The operation error that caused the event */
+       @param Progress.Lang.Object The 'business entity' object, if any */
     constructor public HandlerErrorEventArgs(input poRequest  as IWebRequest,
-                                             input poResponse as IHttpResponse,
-                                             input poError as Progress.Lang.Error):
-        this-object(poRequest, poError).
+                                             input poResponse as IHttpResponse):
+        super(poRequest).
         
         Assert:NotNull(poResponse, 'Response').        
         assign this-object:Response = poResponse.
@@ -53,7 +49,7 @@ class OpenEdge.Web.DataObject.HandlerErrorEventArgs inherits DataObjectEventArgs
                                                                  
     /* Constructor.
        
-       @param Progress.Lang.Error The operation error that caused the event
+       @param Progress.Lang.Error The as-yet-unhandled exception
        @param IWebRequest The request that resulting in the exception
        @param IHttpResponse The current response object, if any
        @param Progress.Lang.Object The 'business entity' object, if any */
